@@ -2,61 +2,62 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sciflare/src/controller/home_controller.dart';
 import 'package:sciflare/src/model/user_model.dart';
-import 'package:toast/toast.dart';
 
 class HomeWidget extends StatelessWidget {
-  const HomeWidget({super.key});
-
+  HomeWidget({super.key});
+  final controller = Get.put(HomeController());
   @override
   Widget build(BuildContext context) {
-    ToastContext().init(context);
-    return SafeArea(
-      child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: GetBuilder<HomeController>(
-            builder: (controller) {
-              return controller.isLoading.value
-                  ? const Center(
-                      child: SizedBox(
-                          height: 28,
-                          width: 28,
-                          child: CircularProgressIndicator()),
-                    )
-                  : Column(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.lightBlue[400],
+        title: const Text(
+          'Employee details',
+          style: TextStyle(
+              color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800),
+        ),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Obx(
+          () => controller.isLoading.value
+              ? const Center(
+                  child: SizedBox(
+                      height: 28,
+                      width: 28,
+                      child: CircularProgressIndicator()),
+                )
+              : Center(
+                  child: Column(
                     children: [
-                      const Text(
-                        'Employee details',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w800),
-                      ),
                       const SizedBox(
-                        height: 20,
+                        height: 10,
                       ),
-                      Expanded(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: controller.userList.length,
-                          itemBuilder: (context, index) {
-                            UserModel model = controller.userList[index];
-                            return buildItem(model);
-                          },
-                        ),
+                      Obx(
+                        () => controller.userList.isNotEmpty
+                            ? ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                itemCount: controller.userList.length,
+                                itemBuilder: (context, index) {
+                                  UserModel model = controller.userList[index];
+                                  return buildItem(model);
+                                },
+                              )
+                            : buildPlaceHolder(),
                       )
                     ],
-                  );
-            },
-          ),
+                  ),
+                ),
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.blue[400],
-          onPressed: () {
-            Get.find<HomeController>().addRecordDialog();
-          },
-          child: const Icon(Icons.add, color: Colors.white, size: 28),
-        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue[400],
+        onPressed: () {
+          Get.find<HomeController>().addRecordDialog();
+        },
+        child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
     );
   }
@@ -65,7 +66,7 @@ class HomeWidget extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(
-          height: 10,
+          width: 20,
         ),
         Row(
           children: [
@@ -151,7 +152,24 @@ class HomeWidget extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        const Divider()
+        Divider()
+      ],
+    );
+  }
+
+  buildPlaceHolder() {
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.no_accounts,
+          size: 30,
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Text('No Data found!.')
       ],
     );
   }

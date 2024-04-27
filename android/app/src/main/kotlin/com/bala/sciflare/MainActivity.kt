@@ -1,4 +1,4 @@
-package com.bala.lionsbot.sciflare
+package com.bala.sciflare
 
 import io.flutter.embedding.android.FlutterActivity
 

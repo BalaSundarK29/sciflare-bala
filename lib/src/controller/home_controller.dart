@@ -19,7 +19,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     httpClient = http.Client();
-    dbHelper = Get.find<DatabaseHelper>();
+    dbHelper = DatabaseHelper();
     readAllEmpDetails();
     super.onInit();
   }
@@ -27,14 +27,16 @@ class HomeController extends GetxController {
   void readAllEmpDetails() async {
     isLoading.value = true;
     update();
+
     try {
       var resposne = await httpClient!.get(Uri.parse(baseUrl));
-      List listItem = json.decode(resposne.body);
-      await insertDatabase(listItem);
-
-      userList.value = await dbHelper!.getAllUsers();
-      isLoading.value = false;
-      update();
+       if (resposne.statusCode == 200) {
+          List listItem = json.decode(resposne.body);
+          await insertDatabase(listItem);
+        }
+        userList.value = await dbHelper!.getAllUsers();
+        isLoading.value = false;
+        update();
     } catch (e) {
       isLoading.value = false;
       update();
